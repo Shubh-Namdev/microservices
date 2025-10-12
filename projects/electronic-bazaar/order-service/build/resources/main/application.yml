@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: electronic-bazaar-order-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-order:3306/order_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:order_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:order_password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8084
+
+jwt:
+  secret: ${JWT_SECRET:replace_this_with_a_very_long_secret}
+
+product:
+  url: ${PRODUCT_SERVICE_URL:http://product-service:8081}
+customer:
+  url: ${CUSTOMER_SERVICE_URL:http://customer-service:8083}

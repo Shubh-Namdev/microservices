@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: electronic-bazaar-customer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: electronic-bazaar-customer
+  template:
+    metadata:
+      labels:
+        app: electronic-bazaar-customer
+    spec:
+      containers:
+        - name: electronic-bazaar-customer
+          image: shubhamnamdev01/electronic-bazaar-customer-service:v1
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/electronic_bazaar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: JWT_SECRET
+              value: replace_this_with_a_very_long_secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: electronic-bazaar-customer-service
+spec:
+  selector:
+    app: electronic-bazaar-customer
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: ClusterIP

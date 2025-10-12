@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: electronic-bazaar-payment-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-payment:3306/payment_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:payment_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:payment_password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8085
+
+jwt:
+  secret: ${JWT_SECRET:replace_this_with_a_very_long_secret}
+
+order:
+  url: ${ORDER_SERVICE_URL:http://order-service:8084}

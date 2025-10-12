@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: electronic-bazaar-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: electronic-bazaar-gateway
+  template:
+    metadata:
+      labels:
+        app: electronic-bazaar-gateway
+    spec:
+      containers:
+        - name: electronic-bazaar-gateway
+          image: shubhamnamdev01/electronic-bazaar-gateway:v2
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JWT_SECRET
+              value: replace_this_with_a_very_long_secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: electronic-bazaar-gateway-service
+spec:
+  selector:
+    app: electronic-bazaar-gateway
+  ports:
+    # - protocol: TCP
+    - port: 80
+      targetPort: 8080
+  # type: LoadBalancer
+  type: ClusterIP

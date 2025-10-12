@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: eb-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: electronic_bazaar
+    ports:
+      - "3306:3306"
+    networks:
+      - pipnet
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: eb-app
+    environment:
+      MYSQL_HOST: nysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: electronic_bazaar
+      MYSQL_USER: eb-user
+      MYSQL_PASSWORD: eb-pass
+      JWT_SECRET: replace_this_with_a_very_long_secret
+      JWT_EXPIRATION_MS: 3600000
+    networks:
+      - pipnet
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+networks:
+  pipnet:

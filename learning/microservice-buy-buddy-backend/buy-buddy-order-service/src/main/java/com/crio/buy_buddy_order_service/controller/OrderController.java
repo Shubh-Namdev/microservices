@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.crio.buy_buddy_order_service.dto.OrderRequest;
+import com.crio.buy_buddy_order_service.dto.OrderResponse;
 import com.crio.buy_buddy_order_service.model.Order;
 import com.crio.buy_buddy_order_service.service.OrderService;
 
@@ -30,8 +31,8 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+        OrderResponse order = orderService.getOrderById(id);
         return ResponseEntity.ok(order);
     }
 

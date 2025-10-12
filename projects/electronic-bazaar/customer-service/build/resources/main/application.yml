@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: electronic-bazaar-customer-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-customer:3306/customer_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:customer_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:customer_password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8083
+
+jwt:
+  secret: ${JWT_SECRET:replace_this_with_a_very_long_secret}

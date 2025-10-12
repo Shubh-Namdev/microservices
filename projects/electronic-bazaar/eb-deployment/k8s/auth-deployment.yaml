@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: electronic-bazaar-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: electronic-bazaar-auth
+  template:
+    metadata:
+      labels:
+        app: electronic-bazaar-auth
+    spec:
+      containers:
+        - name: electronic-bazaar-auth
+          image: shubhamnamdev01/electronic-bazaar-auth-service:v1
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/electronic_bazaar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: JWT_SECRET
+              value: replace_this_with_a_very_long_secret
+            - name: JWT_EXPIRATION_MS
+              value: "3600000"
+            - name: JWT_REFRESH_EXPIRATION_MS
+              value: "2592000000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: electronic-bazaar-auth-service
+spec:
+  selector:
+    app: electronic-bazaar-auth
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: ClusterIP

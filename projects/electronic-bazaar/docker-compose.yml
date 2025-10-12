@@ -1,0 +1,121 @@
+version: '3.8'
+services:
+  mysql-auth:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: auth_pass
+      MYSQL_DATABASE: eb_auth_db
+    volumes:
+      - auth-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  electronic-bazaar-auth-service:
+    build: ./auth-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/eb_auth_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: auth_pass
+      JWT_SECRET: replace_this_with_a_very_long_secret
+      JWT_EXPIRATION_MS: 3600000
+      JWT_REFRESH_EXPIRATION_MS: 2592000000
+    depends_on:
+      mysql-auth:
+        condition: service_healthy
+  electronic-bazaar-customer-service:
+    build: ./customer-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/eb_auth_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: auth_pass
+      JWT_SECRET: replace_this_with_a_very_long_secret
+    depends_on:
+      mysql-auth:
+        condition: service_healthy
+
+
+  mysql-product:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: product_pass
+      MYSQL_DATABASE: eb_product_db
+    volumes:
+      - product-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  electronic-bazaar-product-service:
+    build: ./product-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-product:3306/eb_product_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: product_pass
+      JWT_SECRET: replace_this_with_a_very_long_secret
+    depends_on:
+      mysql-product:
+        condition: service_healthy
+
+  mysql-order:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: order_pass
+      MYSQL_DATABASE: eb_order_db
+    volumes:
+      - order-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  electronic-bazaar-order-service:
+    build: ./order-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-order:3306/eb_order_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: order_pass
+      JWT_SECRET: replace_this_with_a_very_long_secret
+      PRODUCT_SERVICE_URL: http://electronic-bazaar-product-service:8081
+      CUSTOMER_SERVICE_URL: http://electronic-bazaar-customer-service:8083
+    depends_on:
+      - mysql-order
+      - electronic-bazaar-product-service
+      - electronic-bazaar-customer-service
+
+
+  mysql-payment:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: payment_pass
+      MYSQL_DATABASE: eb_payment_db
+    volumes:
+      - payment-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  electronic-bazaar-payment-service:
+    build: ./payment-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-payment:3306/eb_payment_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: payment_pass
+      JWT_SECRET: replace_this_with_a_very_long_secret
+      ORDER_SERVICE_URL: http://electronic-bazaar-order-service:8084
+    depends_on:
+      - electronic-bazaar-order-service
+
+
+  gateway:
+    build: ./gateway
+    environment:
+      JWT_SECRET: replace_this_with_a_very_long_secret
+    ports:
+      - "8085:8080"
+    depends_on:
+      - electronic-bazaar-auth-service
+      - electronic-bazaar-product-service
+      - electronic-bazaar-customer-service
+      - electronic-bazaar-order-service
+      - electronic-bazaar-payment-service
+volumes:
+  product-db-data:
+  auth-db-data:
+  order-db-data:
+  payment-db-data:
+
+
+
+  

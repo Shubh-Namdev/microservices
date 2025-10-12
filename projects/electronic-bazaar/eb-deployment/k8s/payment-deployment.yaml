@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: electronic-bazaar-payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: electronic-bazaar-payment
+  template:
+    metadata:
+      labels:
+        app: electronic-bazaar-payment
+    spec:
+      containers:
+        - name: electronic-bazaar-payment
+          image: shubhamnamdev01/electronic-bazaar-payment-service:v1
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/electronic_bazaar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: JWT_SECRET
+              value: replace_this_with_a_very_long_secret
+            - name: ORDER_SERVICE_URL
+              value: http://electronic-bazaar-order-service:8084
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: electronic-bazaar-payment-service
+spec:
+  selector:
+    app: electronic-bazaar-payment
+  ports:
+    - port: 8085
+      targetPort: 8085
+  type: ClusterIP

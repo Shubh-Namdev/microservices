@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Minimal gradle launcher: will use system 'gradle' command if available.
+if command -v gradle >/dev/null 2>&1; then
+  gradle "$@"
+else
+  echo "Gradle not found. Please install Gradle or run with an actual Gradle Wrapper."
+  exit 1
+fi
