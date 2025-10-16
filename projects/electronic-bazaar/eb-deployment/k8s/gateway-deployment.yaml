@@ -14,12 +14,15 @@ spec:
     spec:
       containers:
         - name: electronic-bazaar-gateway
-          image: shubhamnamdev01/electronic-bazaar-gateway:v2
+          image: shubhamnamdev01/electronic-bazaar-gateway:v3
           ports:
             - containerPort: 8080
           env:
             - name: JWT_SECRET
-              value: replace_this_with_a_very_long_secret
+              valueFrom:
+                secretKeyRef:
+                  name: eb-app-secret
+                  key: jwt_secret
 ---
 apiVersion: v1
 kind: Service
@@ -29,8 +32,8 @@ spec:
   selector:
     app: electronic-bazaar-gateway
   ports:
-    # - protocol: TCP
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 8080
-  # type: LoadBalancer
-  type: ClusterIP
+  type: LoadBalancer
+  # type: ClusterIP

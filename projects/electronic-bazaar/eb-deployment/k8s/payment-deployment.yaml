@@ -19,15 +19,28 @@ spec:
             - containerPort: 8085
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://mysql:3306/electronic_bazaar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+              value: jdbc:mysql://mysql-db.cbk2awmcs7cz.ap-south-1.rds.amazonaws.com:3306/electronic_bazaar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC              
+              # value: jdbc:mysql://mysql:3306/electronic_bazaar?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
             - name: SPRING_DATASOURCE_USERNAME
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: rds-db-cred
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: rds-db-cred
+                  key: password
             - name: JWT_SECRET
-              value: replace_this_with_a_very_long_secret
+              valueFrom:
+                secretKeyRef:
+                  name: eb-app-secret
+                  key: jwt_secret
             - name: ORDER_SERVICE_URL
-              value: http://electronic-bazaar-order-service:8084
+              valueFrom:
+                configMapKeyRef:
+                  name: electonic-bazaar-config
+                  key: order_service_url
 ---
 apiVersion: v1
 kind: Service

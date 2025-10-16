@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: electonic-bazaar-config
+data:
+  jwt_expiration_ms: "3600000"
+  jwt_refresh_expiration_ms: "2592000000"
+  product_service_url: "http://electronic-bazaar-product-service:8081"
+  customer_service_url: "http://electronic-bazaar-customer-service:8083"
+  order_service_url: "http://electronic-bazaar-order-service:8084"
+  
